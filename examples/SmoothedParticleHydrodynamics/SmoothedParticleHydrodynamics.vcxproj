@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E6EA73EB-F133-4103-B375-768E6086339A}</ProjectGuid>
-    <RootNamespace>Boids_BruteForce_</RootNamespace>
-    <ProjectName>Boids_BruteForce</ProjectName>
+    <RootNamespace>SmoothedParticleHydrodynamics_</RootNamespace>
+    <ProjectName>SmoothedParticleHydrodynamics</ProjectName>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -259,6 +259,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <FLAMEGPU_Template_Build_Rule Include="src\model\XMLModelFile.xml">
       <VisualisationTransform Condition="'$(Configuration)|$(Platform)'=='Debug_Visualisation|x64'">true</VisualisationTransform>
       <VisualisationTransform Condition="'$(Configuration)|$(Platform)'=='Release_Visualisation|x64'">true</VisualisationTransform>
+      <SubType>Designer</SubType>
     </FLAMEGPU_Template_Build_Rule>
   </ItemGroup>
   <ItemGroup>
