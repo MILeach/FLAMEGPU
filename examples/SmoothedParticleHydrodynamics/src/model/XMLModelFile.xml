@@ -42,6 +42,18 @@
         </gpu:variable>
         <gpu:variable>
           <type>float</type>
+          <name>fx</name>
+        </gpu:variable>
+        <gpu:variable>
+          <type>float</type>
+          <name>fy</name>
+        </gpu:variable>
+        <gpu:variable>
+          <type>float</type>
+          <name>fz</name>
+        </gpu:variable>
+        <gpu:variable>
+          <type>float</type>
           <name>density</name>
         </gpu:variable>
         <gpu:variable>
@@ -118,7 +130,7 @@
         <initialState>default</initialState>
       </states>
       <gpu:type>continuous</gpu:type>
-      <gpu:bufferSize>8192</gpu:bufferSize>
+      <gpu:bufferSize>65536</gpu:bufferSize>
     </gpu:xagent>
   </xagents>
   <messages>
@@ -155,8 +167,16 @@
           <name>dz</name>
         </gpu:variable>
       </variables>
-      <gpu:partitioningNone/>
-      <gpu:bufferSize>8192</gpu:bufferSize>
+      <gpu:partitioningSpatial>
+        <gpu:radius>0.057</gpu:radius>
+        <gpu:xmin>-0.513</gpu:xmin>
+        <gpu:xmax>0.513</gpu:xmax>
+        <gpu:ymin>-0.513</gpu:ymin>
+        <gpu:ymax>0.513</gpu:ymax>
+        <gpu:zmin>-0.513</gpu:zmin>
+        <gpu:zmax>0.513</gpu:zmax>
+      </gpu:partitioningSpatial>
+      <gpu:bufferSize>65536</gpu:bufferSize>
     </gpu:message>
     <gpu:message>
       <name>density_pressure</name>
@@ -199,8 +219,16 @@
           <name>dz</name>
         </gpu:variable>
       </variables>
-      <gpu:partitioningNone/>
-      <gpu:bufferSize>8192</gpu:bufferSize>
+      <gpu:partitioningSpatial>
+        <gpu:radius>0.057</gpu:radius>
+        <gpu:xmin>-0.513</gpu:xmin>
+        <gpu:xmax>0.513</gpu:xmax>
+        <gpu:ymin>-0.513</gpu:ymin>
+        <gpu:ymax>0.513</gpu:ymax>
+        <gpu:zmin>-0.513</gpu:zmin>
+        <gpu:zmax>0.513</gpu:zmax>
+      </gpu:partitioningSpatial>
+      <gpu:bufferSize>65536</gpu:bufferSize>
     </gpu:message>
     <gpu:message>
       <name>force</name>
@@ -247,8 +275,16 @@
           <name>fz</name>
         </gpu:variable>
       </variables>
-      <gpu:partitioningNone/>
-      <gpu:bufferSize>8192</gpu:bufferSize>
+      <gpu:partitioningSpatial>
+        <gpu:radius>0.057</gpu:radius>
+        <gpu:xmin>-0.513</gpu:xmin>
+        <gpu:xmax>0.513</gpu:xmax>
+        <gpu:ymin>-0.513</gpu:ymin>
+        <gpu:ymax>0.513</gpu:ymax>
+        <gpu:zmin>-0.513</gpu:zmin>
+        <gpu:zmax>0.513</gpu:zmax>
+      </gpu:partitioningSpatial>
+      <gpu:bufferSize>65536</gpu:bufferSize>
     </gpu:message>
   </messages>
   <layers>
