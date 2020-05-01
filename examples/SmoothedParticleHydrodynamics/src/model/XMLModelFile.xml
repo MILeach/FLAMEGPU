@@ -60,6 +60,10 @@
           <type>float</type>
           <name>pressure</name>
         </gpu:variable>
+        <gpu:variable>
+          <type>int</type>
+          <name>isStatic</name>
+        </gpu:variable>
       </memory>
       <functions>
         <gpu:function>
@@ -108,6 +112,15 @@
               <gpu:type>single_message</gpu:type>
             </gpu:output>
           </outputs>
+          <condition>
+            <lhs>
+              <agentVariable>isStatic</agentVariable>
+            </lhs>
+            <operator>==</operator>
+            <rhs>
+              <value>0</value>
+            </rhs>
+          </condition>
           <gpu:reallocate>false</gpu:reallocate>
         </gpu:function>
         <gpu:function>
@@ -119,7 +132,15 @@
               <messageName>force</messageName>
             </gpu:input>
           </inputs>
-          
+          <condition>
+            <lhs>
+              <agentVariable>isStatic</agentVariable>
+            </lhs>
+            <operator>==</operator>
+            <rhs>
+              <value>0</value>
+            </rhs>
+          </condition>
           <gpu:reallocate>false</gpu:reallocate>
         </gpu:function>
       </functions>
@@ -127,10 +148,13 @@
         <gpu:state>
           <name>default</name>
         </gpu:state>
+        <gpu:state>
+          <name>static</name>
+        </gpu:state>
         <initialState>default</initialState>
       </states>
       <gpu:type>continuous</gpu:type>
-      <gpu:bufferSize>65536</gpu:bufferSize>
+      <gpu:bufferSize>131072</gpu:bufferSize>
     </gpu:xagent>
   </xagents>
   <messages>
@@ -168,7 +192,7 @@
         </gpu:variable>
       </variables>
       <gpu:partitioningSpatial>
-        <gpu:radius>0.057</gpu:radius>
+        <gpu:radius>0.0285</gpu:radius>
         <gpu:xmin>-0.513</gpu:xmin>
         <gpu:xmax>0.513</gpu:xmax>
         <gpu:ymin>-0.513</gpu:ymin>
@@ -176,7 +200,7 @@
         <gpu:zmin>-0.513</gpu:zmin>
         <gpu:zmax>0.513</gpu:zmax>
       </gpu:partitioningSpatial>
-      <gpu:bufferSize>65536</gpu:bufferSize>
+      <gpu:bufferSize>131072</gpu:bufferSize>
     </gpu:message>
     <gpu:message>
       <name>density_pressure</name>
@@ -218,9 +242,13 @@
           <type>float</type>
           <name>dz</name>
         </gpu:variable>
+        <gpu:variable>
+          <type>int</type>
+          <name>isStatic</name>
+        </gpu:variable>
       </variables>
       <gpu:partitioningSpatial>
-        <gpu:radius>0.057</gpu:radius>
+        <gpu:radius>0.0285</gpu:radius>
         <gpu:xmin>-0.513</gpu:xmin>
         <gpu:xmax>0.513</gpu:xmax>
         <gpu:ymin>-0.513</gpu:ymin>
@@ -228,7 +256,7 @@
         <gpu:zmin>-0.513</gpu:zmin>
         <gpu:zmax>0.513</gpu:zmax>
       </gpu:partitioningSpatial>
-      <gpu:bufferSize>65536</gpu:bufferSize>
+      <gpu:bufferSize>131072</gpu:bufferSize>
     </gpu:message>
     <gpu:message>
       <name>force</name>
@@ -276,7 +304,7 @@
         </gpu:variable>
       </variables>
       <gpu:partitioningSpatial>
-        <gpu:radius>0.057</gpu:radius>
+        <gpu:radius>0.0285</gpu:radius>
         <gpu:xmin>-0.513</gpu:xmin>
         <gpu:xmax>0.513</gpu:xmax>
         <gpu:ymin>-0.513</gpu:ymin>
@@ -284,7 +312,7 @@
         <gpu:zmin>-0.513</gpu:zmin>
         <gpu:zmax>0.513</gpu:zmax>
       </gpu:partitioningSpatial>
-      <gpu:bufferSize>65536</gpu:bufferSize>
+      <gpu:bufferSize>131072</gpu:bufferSize>
     </gpu:message>
   </messages>
   <layers>

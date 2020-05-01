@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{071BB28A-4F01-417B-B6A1-F38DF0F2E04E}</ProjectGuid>
-    <RootNamespace>PedestrianNavigation_</RootNamespace>
-    <ProjectName>PedestrianNavigation</ProjectName>
+    <ProjectGuid>{DEF4AA63-5C4A-42DA-B791-C87F6D47EE14}</ProjectGuid>
+    <RootNamespace>Particleizer_</RootNamespace>
+    <ProjectName>Particleizer</ProjectName>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -58,7 +58,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 9.2.props" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 10.2.props" />
     <Import Project="../../tools/FLAMEGPU.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">
@@ -94,7 +94,6 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(CudaToolkitIncludeDir);..\..\include;.\src;.\src\model;.\src\dynamic;.\src\visualisation;%(Include)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -122,7 +121,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WIN64;VISUALISATION;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(CudaToolkitIncludeDir);..\..\include;.\src;.\src\model;.\src\dynamic;.\src\visualisation;%(Include)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -214,38 +212,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Visualisation|x64'">true</ExcludedFromBuild>
       <FileType>Document</FileType>
     </ClInclude>
-    <ClInclude Include="src\visualisation\BufferObjects.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="src\visualisation\CustomVisualisation.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="src\visualisation\GlobalsController.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="src\visualisation\GLUTInputController.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="src\visualisation\MenuDisplay.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="src\visualisation\NavMapPopulation.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="src\visualisation\OBJModel.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="src\visualisation\PedestrianPopulation.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </ClInclude>
+    <ClInclude Include="src\visualisation\visualisation.h" />
     <ClInclude Include="XMML.h">
       <DependentUpon>..\..\FLAMEGPU\schemas\XMML.xsd</DependentUpon>
     </ClInclude>
@@ -255,21 +222,11 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <CudaCompile Include="src\dynamic\io.cu" />
     <CudaCompile Include="src\dynamic\main.cu" />
     <CudaCompile Include="src\dynamic\simulation.cu" />
-    <CudaCompile Include="src\visualisation\BufferObjects.cu">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
+    <CudaCompile Include="src\dynamic\visualisation.cu">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </CudaCompile>
-    <CudaCompile Include="src\visualisation\CustomVisualisation.cu">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Visualisation|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </CudaCompile>
-    <CudaCompile Include="src\visualisation\NavMapPopulation.cu">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </CudaCompile>
-    <CudaCompile Include="src\visualisation\PedestrianPopulation.cu">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Visualisation|x64'">false</ExcludedFromBuild>
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>
@@ -290,65 +247,19 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Visualisation|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="src\visualisation\BufferObjects.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="src\visualisation\CustomVisualisation.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="src\visualisation\GlobalsController.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="src\visualisation\GLUTInputController.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="src\visualisation\MenuDisplay.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="src\visualisation\NavMapPopulation.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="src\visualisation\OBJModel.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="src\visualisation\PedestrianPopulation.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_Console|x64'">true</ExcludedFromBuild>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\FLAMEGPU\templates\_common_templates.xslt" />
-    <Xml Include="..\..\FLAMEGPU\templates\FLAMEGPU_kernals.xslt">
-      <SubType>Designer</SubType>
-    </Xml>
+    <Xml Include="..\..\FLAMEGPU\templates\FLAMEGPU_kernals.xslt" />
     <Xml Include="..\..\FLAMEGPU\templates\header.xslt" />
     <Xml Include="..\..\FLAMEGPU\templates\io.xslt" />
     <Xml Include="..\..\FLAMEGPU\templates\main.xslt" />
-    <Xml Include="..\..\FLAMEGPU\templates\simulation.xslt">
-      <SubType>Designer</SubType>
-    </Xml>
+    <Xml Include="..\..\FLAMEGPU\templates\simulation.xslt" />
     <Xml Include="..\..\FLAMEGPU\templates\visualisation.xslt" />
     <FLAMEGPU_Template_Build_Rule Include="src\model\XMLModelFile.xml">
-      <VisualisationTransform Condition="'$(Configuration)|$(Platform)'=='Debug_Visualisation|x64'">false</VisualisationTransform>
-      <VisualisationTransform Condition="'$(Configuration)|$(Platform)'=='Release_Visualisation|x64'">false</VisualisationTransform>
-      <HeaderTransform Condition="'$(Configuration)|$(Platform)'=='Debug_Visualisation|x64'">true</HeaderTransform>
-      <FLAMEGPUKernalsTransform Condition="'$(Configuration)|$(Platform)'=='Debug_Visualisation|x64'">true</FLAMEGPUKernalsTransform>
-      <IOTransform Condition="'$(Configuration)|$(Platform)'=='Debug_Visualisation|x64'">true</IOTransform>
-      <SimulationTransform Condition="'$(Configuration)|$(Platform)'=='Debug_Visualisation|x64'">true</SimulationTransform>
-      <MainTransform Condition="'$(Configuration)|$(Platform)'=='Debug_Visualisation|x64'">true</MainTransform>
+      <VisualisationTransform Condition="'$(Configuration)|$(Platform)'=='Debug_Visualisation|x64'">true</VisualisationTransform>
+      <VisualisationTransform Condition="'$(Configuration)|$(Platform)'=='Release_Visualisation|x64'">true</VisualisationTransform>
       <SubType>Designer</SubType>
-      <HeaderTransform Condition="'$(Configuration)|$(Platform)'=='Release_Visualisation|x64'">true</HeaderTransform>
-      <FLAMEGPUKernalsTransform Condition="'$(Configuration)|$(Platform)'=='Release_Visualisation|x64'">true</FLAMEGPUKernalsTransform>
-      <IOTransform Condition="'$(Configuration)|$(Platform)'=='Release_Visualisation|x64'">true</IOTransform>
-      <SimulationTransform Condition="'$(Configuration)|$(Platform)'=='Release_Visualisation|x64'">true</SimulationTransform>
-      <MainTransform Condition="'$(Configuration)|$(Platform)'=='Release_Visualisation|x64'">true</MainTransform>
     </FLAMEGPU_Template_Build_Rule>
   </ItemGroup>
   <ItemGroup>
@@ -367,7 +278,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 9.2.targets" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 10.2.targets" />
     <Import Project="../../tools/FLAMEGPU.targets" />
   </ImportGroup>
 </Project>

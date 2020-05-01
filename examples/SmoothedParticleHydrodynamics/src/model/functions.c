@@ -46,7 +46,7 @@
 
 // Fluid properties
 #define PARTICLE_MASS 0.001953125f
-#define PRESSURE_COEFFICIENT 1.0f
+#define PRESSURE_COEFFICIENT 0.5f
 #define FLUID_REST_DENSITY 1000.0f
 #define MINIMUM_PARTICLE_DENSITY 0.2f
 #define MAXIMUM_PARTICLE_DENSITY 1000000.0f
@@ -155,23 +155,19 @@ __FLAME_GPU_FUNC__ int computeDensityPressure(xmachine_memory_FluidParticle* age
     xmachine_message_location_velocity* current_message = get_first_location_velocity_message(location_velocity_messages, partition_matrix, agent->x, agent->y, agent->z);
 	while (current_message)
 	{
-		// For each other agent
-		//if (agent->id != current_message->id)	
-		//{
-			// Add weighted density contribution
-			glm::vec3 diff = glm::vec3(current_message->x - agent->x, current_message->y - agent->y, current_message->z - agent->z);
-			float distance = length(diff);
-			density += PARTICLE_MASS*computeW(distance, SMOOTHING_LENGTH);
-		//}
+		// For each agent add weighted density contribution
+		glm::vec3 diff = glm::vec3(current_message->x - agent->x, current_message->y - agent->y, current_message->z - agent->z);
+		float distance = length(diff);
+		density += PARTICLE_MASS*computeW(distance, SMOOTHING_LENGTH);
+		
 		current_message = get_next_location_velocity_message(current_message, location_velocity_messages, partition_matrix);
 	}
 
-	// TODO: Do I actually need to store these on the agent? Maybe for visualisation
+	
 	agent->density = max(density, MINIMUM_PARTICLE_DENSITY);
 	agent->pressure = max(PRESSURE_COEFFICIENT * (agent->density - FLUID_REST_DENSITY), 0.0f);
-	//agent->pressure = (100 * FLUID_REST_DENSITY / 7.0f)*(pow((agent->density / FLUID_REST_DENSITY), 7) - 1);
 
-    add_density_pressure_message(density_pressure_messages, agent->id, agent->density, agent->pressure, agent->x, agent->y, agent->z, agent->dx, agent->dy, agent->dz);
+    add_density_pressure_message(density_pressure_messages, agent->id, agent->density, agent->pressure, agent->x, agent->y, agent->z, agent->dx, agent->dy, agent->dz, agent->isStatic);
 
     return 0;
 }
@@ -197,16 +193,19 @@ __FLAME_GPU_FUNC__ int computeForce(xmachine_memory_FluidParticle* agent, xmachi
 			float distance = length(diff);			
 			float weight = (agent->pressure + current_message->pressure) / (2.0f * current_message->density);
 			glm::vec3 del_w = computeDelW(distance, diff, SMOOTHING_LENGTH);
-						
 			pressure += PARTICLE_MASS * weight * del_w;
 
-			// Add viscosity
-			glm::vec3 velocityDiff = glm::vec3(current_message->dx - agent->dx, current_message->dy - agent->dy, current_message->dz - agent->dz);
-			//glm::vec3 Vij = (VISCOSITY * PARTICLE_MASS / (agent->density * current_message->density)) * velocityDiff;
-			glm::vec3 Vij = (VISCOSITY * PARTICLE_MASS) * velocityDiff;
-			float laplacian = computeDelSqW(distance, SMOOTHING_LENGTH);
-			
-			pressure += laplacian*Vij;
+
+			if (current_message->isStatic == false)
+			{
+				// Add viscosity
+				glm::vec3 velocityDiff = glm::vec3(current_message->dx - agent->dx, current_message->dy - agent->dy, current_message->dz - agent->dz);
+				//glm::vec3 Vij = (VISCOSITY * PARTICLE_MASS / (agent->density * current_message->density)) * velocityDiff;
+				glm::vec3 Vij = (VISCOSITY * PARTICLE_MASS) * velocityDiff;
+				float laplacian = computeDelSqW(distance, SMOOTHING_LENGTH);
+
+				pressure += laplacian * Vij;
+			}
 
 			// Add surface tension
 			float st = 0.0f;
@@ -223,7 +222,7 @@ __FLAME_GPU_FUNC__ int computeForce(xmachine_memory_FluidParticle* agent, xmachi
 	agent->fx = pressure.x;
 	agent->fy = pressure.y;
 	agent->fz = pressure.z;
-    add_force_message(force_messages, agent->id, agent->x, agent->y, agent->z, agent->dx, agent->dy, agent->dz, pressure.x, pressure.y, pressure.z);
+ 
     
     return 0;
 }
