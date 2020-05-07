@@ -106,12 +106,6 @@
               <messageName>density_pressure</messageName>
             </gpu:input>
           </inputs>
-          <outputs>
-            <gpu:output>
-              <messageName>force</messageName>
-              <gpu:type>single_message</gpu:type>
-            </gpu:output>
-          </outputs>
           <condition>
             <lhs>
               <agentVariable>isStatic</agentVariable>
@@ -127,11 +121,6 @@
           <name>integrate</name>
           <currentState>default</currentState>
           <nextState>default</nextState>
-          <inputs>
-            <gpu:input>
-              <messageName>force</messageName>
-            </gpu:input>
-          </inputs>
           <condition>
             <lhs>
               <agentVariable>isStatic</agentVariable>
@@ -245,62 +234,6 @@
         <gpu:variable>
           <type>int</type>
           <name>isStatic</name>
-        </gpu:variable>
-      </variables>
-      <gpu:partitioningSpatial>
-        <gpu:radius>0.057</gpu:radius>
-        <gpu:xmin>-0.513</gpu:xmin>
-        <gpu:xmax>0.513</gpu:xmax>
-        <gpu:ymin>-0.513</gpu:ymin>
-        <gpu:ymax>0.513</gpu:ymax>
-        <gpu:zmin>-0.513</gpu:zmin>
-        <gpu:zmax>0.513</gpu:zmax>
-      </gpu:partitioningSpatial>
-      <gpu:bufferSize>131072</gpu:bufferSize>
-    </gpu:message>
-    <gpu:message>
-      <name>force</name>
-      <description>A message holding the forces, location and velocity of an agent</description>
-      <variables>
-        <gpu:variable>
-          <type>int</type>
-          <name>id</name>
-        </gpu:variable>
-        <gpu:variable>
-          <type>float</type>
-          <name>x</name>
-        </gpu:variable>
-        <gpu:variable>
-          <type>float</type>
-          <name>y</name>
-        </gpu:variable>
-        <gpu:variable>
-          <type>float</type>
-          <name>z</name>
-        </gpu:variable>
-        <gpu:variable>
-          <type>float</type>
-          <name>dx</name>
-        </gpu:variable>
-        <gpu:variable>
-          <type>float</type>
-          <name>dy</name>
-        </gpu:variable>
-        <gpu:variable>
-          <type>float</type>
-          <name>dz</name>
-        </gpu:variable>
-        <gpu:variable>
-          <type>float</type>
-          <name>fx</name>
-        </gpu:variable>
-        <gpu:variable>
-          <type>float</type>
-          <name>fy</name>
-        </gpu:variable>
-        <gpu:variable>
-          <type>float</type>
-          <name>fz</name>
         </gpu:variable>
       </variables>
       <gpu:partitioningSpatial>

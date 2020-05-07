@@ -128,7 +128,7 @@ __FLAME_GPU_FUNC__ int computeDensityPressure(xmachine_memory_FluidParticle* age
  * @param agent Pointer to an agent structure of type xmachine_memory_FluidParticle. This represents a single agent instance and can be modified directly.
  * @param density_pressure_messages  density_pressure_messages Pointer to input message list of type xmachine_message__list. Must be passed as an argument to the get_first_density_pressure_message and get_next_density_pressure_message functions.* @param force_messages Pointer to output message list of type xmachine_message_force_list. Must be passed as an argument to the add_force_message function.
  */
-__FLAME_GPU_FUNC__ int computeForce(xmachine_memory_FluidParticle* agent, xmachine_message_density_pressure_list* density_pressure_messages, xmachine_message_density_pressure_PBM* partition_matrix, xmachine_message_force_list* force_messages){
+__FLAME_GPU_FUNC__ int computeForce(xmachine_memory_FluidParticle* agent, xmachine_message_density_pressure_list* density_pressure_messages, xmachine_message_density_pressure_PBM* partition_matrix){
     
 	glm::vec3 pressure = glm::vec3(0.0f);
 
@@ -182,7 +182,7 @@ __FLAME_GPU_FUNC__ int computeForce(xmachine_memory_FluidParticle* agent, xmachi
  * @param agent Pointer to an agent structure of type xmachine_memory_FluidParticle. This represents a single agent instance and can be modified directly.
  * @param force_messages  force_messages Pointer to input message list of type xmachine_message__list. Must be passed as an argument to the get_first_force_message and get_next_force_message functions.
  */
-__FLAME_GPU_FUNC__ int integrate(xmachine_memory_FluidParticle* agent, xmachine_message_force_list* force_messages, xmachine_message_force_PBM* partition_matrix){
+__FLAME_GPU_FUNC__ int integrate(xmachine_memory_FluidParticle* agent){
     
 	// Integrate forces due to pressure and viscosity
 	agent->dx += (agent->fx) * TIMESTEP;
