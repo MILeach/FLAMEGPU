@@ -38,7 +38,7 @@
 
 // Sim parameters
 #define TIMESTEP 0.001f
-#define SMOOTHING_LENGTH 0.057f
+#define SMOOTHING_LENGTH 0.040f
 #define MAX_VELOCITY 4.0f
 
 // Environemental parameters

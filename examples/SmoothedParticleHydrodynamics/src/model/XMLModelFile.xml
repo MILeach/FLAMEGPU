@@ -181,13 +181,13 @@
         </gpu:variable>
       </variables>
       <gpu:partitioningSpatial>
-        <gpu:radius>0.057</gpu:radius>
-        <gpu:xmin>-0.513</gpu:xmin>
-        <gpu:xmax>0.513</gpu:xmax>
-        <gpu:ymin>-0.513</gpu:ymin>
-        <gpu:ymax>0.513</gpu:ymax>
-        <gpu:zmin>-0.513</gpu:zmin>
-        <gpu:zmax>0.513</gpu:zmax>
+        <gpu:radius>0.02</gpu:radius>
+        <gpu:xmin>-0.5</gpu:xmin>
+        <gpu:xmax>0.5</gpu:xmax>
+        <gpu:ymin>-0.5</gpu:ymin>
+        <gpu:ymax>0.5</gpu:ymax>
+        <gpu:zmin>-0.5</gpu:zmin>
+        <gpu:zmax>0.5</gpu:zmax>
       </gpu:partitioningSpatial>
       <gpu:bufferSize>131072</gpu:bufferSize>
     </gpu:message>
@@ -237,13 +237,13 @@
         </gpu:variable>
       </variables>
       <gpu:partitioningSpatial>
-        <gpu:radius>0.057</gpu:radius>
-        <gpu:xmin>-0.513</gpu:xmin>
-        <gpu:xmax>0.513</gpu:xmax>
-        <gpu:ymin>-0.513</gpu:ymin>
-        <gpu:ymax>0.513</gpu:ymax>
-        <gpu:zmin>-0.513</gpu:zmin>
-        <gpu:zmax>0.513</gpu:zmax>
+        <gpu:radius>0.02</gpu:radius>
+        <gpu:xmin>-0.5</gpu:xmin>
+        <gpu:xmax>0.5</gpu:xmax>
+        <gpu:ymin>-0.5</gpu:ymin>
+        <gpu:ymax>0.5</gpu:ymax>
+        <gpu:zmin>-0.5</gpu:zmin>
+        <gpu:zmax>0.5</gpu:zmax>
       </gpu:partitioningSpatial>
       <gpu:bufferSize>131072</gpu:bufferSize>
     </gpu:message>
