@@ -192,7 +192,7 @@
         </gpu:variable>
       </variables>
       <gpu:partitioningSpatial>
-        <gpu:radius>0.0285</gpu:radius>
+        <gpu:radius>0.057</gpu:radius>
         <gpu:xmin>-0.513</gpu:xmin>
         <gpu:xmax>0.513</gpu:xmax>
         <gpu:ymin>-0.513</gpu:ymin>
@@ -248,7 +248,7 @@
         </gpu:variable>
       </variables>
       <gpu:partitioningSpatial>
-        <gpu:radius>0.0285</gpu:radius>
+        <gpu:radius>0.057</gpu:radius>
         <gpu:xmin>-0.513</gpu:xmin>
         <gpu:xmax>0.513</gpu:xmax>
         <gpu:ymin>-0.513</gpu:ymin>
@@ -304,7 +304,7 @@
         </gpu:variable>
       </variables>
       <gpu:partitioningSpatial>
-        <gpu:radius>0.0285</gpu:radius>
+        <gpu:radius>0.057</gpu:radius>
         <gpu:xmin>-0.513</gpu:xmin>
         <gpu:xmax>0.513</gpu:xmax>
         <gpu:ymin>-0.513</gpu:ymin>

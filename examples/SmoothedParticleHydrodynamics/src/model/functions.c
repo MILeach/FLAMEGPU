@@ -39,18 +39,19 @@
 // Sim parameters
 #define TIMESTEP 0.001f
 #define SMOOTHING_LENGTH 0.057f
+#define MAX_VELOCITY 4.0f
 
 // Environemental parameters
-#define RESTITUTION_COEFFICIENT 0.8f
+#define RESTITUTION_COEFFICIENT 0.6f
 #define HALF_BOUNDARY_WIDTH 0.5f
 
 // Fluid properties
 #define PARTICLE_MASS 0.001953125f
-#define PRESSURE_COEFFICIENT 0.5f
+#define PRESSURE_COEFFICIENT 1.0f
 #define FLUID_REST_DENSITY 1000.0f
-#define MINIMUM_PARTICLE_DENSITY 0.2f
-#define MAXIMUM_PARTICLE_DENSITY 1000000.0f
-#define VISCOSITY 200.05f
+#define MINIMUM_PARTICLE_DENSITY 0.0f
+#define MAXIMUM_PARTICLE_DENSITY 10000000.0f
+#define VISCOSITY 10.0f
 
 //// Math helpers
 inline __device__ float dot(glm::vec3 a, glm::vec3 b) {
@@ -63,70 +64,15 @@ inline __device__ float length(glm::vec3 v) {
 
 //// Smoothing functions
 __device__ float computeW(float distance, float smoothingLength) {
-	//float relativeDistance = distance / smoothingLength;
-	//float w = 0.0f;
-
-	//if (relativeDistance > 2)
-	//	w = 0;
-	//else if (relativeDistance > 1) {
-	//	w = pow(2 - relativeDistance, 3) / 4.0f;
-	//}
-	//else {
-	//	w = 1 - (3.0f / 2.0f)*pow(relativeDistance, 2) + (3.0f / 4.0f)*pow(relativeDistance, 3);
-	//}
-	//	
-	//// Account for 3 dimensions
-	//w /= PI;
-	//w /= pow(SMOOTHING_LENGTH, 3);
-	//return w;
-
-
-	// Poly6
 	return distance < smoothingLength ? (315.0f / (64.0f*PI*pow(smoothingLength, 9))) * pow((pow(smoothingLength, 2) - pow(distance, 2)), 3) : 0.0f;
 }
 
 __device__ glm::vec3 computeDelW(float distance, glm::vec3 difference, float smoothingLength) {
-	//float relativeDistance = distance / smoothingLength;
-	//float w = 0.0f;
-
-	//// Cubic spline
-	//if (relativeDistance > 2)
-	//	w = 0;
-	//else if (relativeDistance > 1) {
-	//	w = (-3.0f / 4.0f)*pow((2-relativeDistance),2);
-	//}
-	//else {
-	//	w = -3 * relativeDistance + (9.0f / 4.0f)*pow(relativeDistance, 2);
-	//}
-
-	//// Account for 3 dimensions
-	//w /= PI;
-	//w /= pow(SMOOTHING_LENGTH, 3);
-
-
-	//// Spiky
-	////w = (-45.0f / (PI * pow(smoothingLength, 6))) * pow(1 - relativeDistance, 2);
-	//
-	//return w * difference;
-
 	return distance < smoothingLength ? -(45.0f / (PI*pow(smoothingLength, 6)))*(pow(smoothingLength - distance, 2))* (1.0f / distance) * difference : glm::vec3(0.0f);
-	//return distance < smoothingLength ? -((smoothingLength/distance) - 1.0f)*difference : glm::vec3(0.0f);
 }
 
 __device__ float computeDelSqW(float distance, float smoothingLength) {
-	/*float w = 0.0f;
-	float relativeDistance = distance / smoothingLength;
-	
-	if (relativeDistance > 1) {
-		w = 0.0f;
-	}
-	else {
-		w = (15 / (2 * PI*pow(smoothingLength, 3))) * (-pow(relativeDistance, 3) / 2 + pow(relativeDistance, 2) + relativeDistance / 2 - 1);
-	}
-	return w;*/
-
-	//return distance < smoothingLength ? (45.0f / (PI*pow(smoothingLength, 6))) * (smoothingLength - distance) : 0.0f;
-	return distance < smoothingLength ? 1.0f - distance/smoothingLength : 0.0f;
+	return distance < smoothingLength ? (45.0f / (PI*pow(smoothingLength, 6))) * (smoothingLength - distance) : 0.0f;
 }
 
 /**
@@ -150,7 +96,9 @@ __FLAME_GPU_FUNC__ int outputLocationVelocity(xmachine_memory_FluidParticle* age
  */
 __FLAME_GPU_FUNC__ int computeDensityPressure(xmachine_memory_FluidParticle* agent, xmachine_message_location_velocity_list* location_velocity_messages, xmachine_message_location_velocity_PBM* partition_matrix, xmachine_message_density_pressure_list* density_pressure_messages){
 
+	// Compute unmodified particle density
 	float density = 0.0f;
+	int numNeighbours = 0;
     
     xmachine_message_location_velocity* current_message = get_first_location_velocity_message(location_velocity_messages, partition_matrix, agent->x, agent->y, agent->z);
 	while (current_message)
@@ -158,15 +106,17 @@ __FLAME_GPU_FUNC__ int computeDensityPressure(xmachine_memory_FluidParticle* age
 		// For each agent add weighted density contribution
 		glm::vec3 diff = glm::vec3(current_message->x - agent->x, current_message->y - agent->y, current_message->z - agent->z);
 		float distance = length(diff);
-		density += PARTICLE_MASS*computeW(distance, SMOOTHING_LENGTH);
+		float w = computeW(distance, SMOOTHING_LENGTH);
+		density += PARTICLE_MASS * w;
 		
 		current_message = get_next_location_velocity_message(current_message, location_velocity_messages, partition_matrix);
 	}
 
-	
+	// Set density and pressure for the particle - negative pressures are not used
 	agent->density = max(density, MINIMUM_PARTICLE_DENSITY);
 	agent->pressure = max(PRESSURE_COEFFICIENT * (agent->density - FLUID_REST_DENSITY), 0.0f);
 
+	// Output location/density/pressure
     add_density_pressure_message(density_pressure_messages, agent->id, agent->density, agent->pressure, agent->x, agent->y, agent->z, agent->dx, agent->dy, agent->dz, agent->isStatic);
 
     return 0;
@@ -195,13 +145,12 @@ __FLAME_GPU_FUNC__ int computeForce(xmachine_memory_FluidParticle* agent, xmachi
 			glm::vec3 del_w = computeDelW(distance, diff, SMOOTHING_LENGTH);
 			pressure += PARTICLE_MASS * weight * del_w;
 
-
+			// Only add viscosity contribution from non-static particles
 			if (current_message->isStatic == false)
 			{
-				// Add viscosity
+				// Add viscosity contribution
 				glm::vec3 velocityDiff = glm::vec3(current_message->dx - agent->dx, current_message->dy - agent->dy, current_message->dz - agent->dz);
-				//glm::vec3 Vij = (VISCOSITY * PARTICLE_MASS / (agent->density * current_message->density)) * velocityDiff;
-				glm::vec3 Vij = (VISCOSITY * PARTICLE_MASS) * velocityDiff;
+				glm::vec3 Vij = (VISCOSITY * PARTICLE_MASS / (agent->density * current_message->density)) * velocityDiff;
 				float laplacian = computeDelSqW(distance, SMOOTHING_LENGTH);
 
 				pressure += laplacian * Vij;
@@ -212,7 +161,7 @@ __FLAME_GPU_FUNC__ int computeForce(xmachine_memory_FluidParticle* agent, xmachi
 			if (distance > SMOOTHING_LENGTH / 2.0f && distance <= SMOOTHING_LENGTH)
 				st = 10 * (32.0f / (PI*pow(SMOOTHING_LENGTH, 6))) * pow(SMOOTHING_LENGTH - distance, 3) * pow(distance, 3);
 			if (distance > 0 && distance <= SMOOTHING_LENGTH / 2.0f)
-				st = ((64.0f / (PI*pow(SMOOTHING_LENGTH, 6))) * 2 * pow(SMOOTHING_LENGTH - distance, 3) * pow(distance, 3)) - pow(SMOOTHING_LENGTH, 4) / 64.0f;
+				st = (((64.0f / (PI*pow(SMOOTHING_LENGTH, 6))) * 2 * pow(SMOOTHING_LENGTH - distance, 3) * pow(distance, 3)) - pow(SMOOTHING_LENGTH, 4) / 64.0f);
 			pressure += st * diff;
 		}
         
@@ -243,12 +192,28 @@ __FLAME_GPU_FUNC__ int integrate(xmachine_memory_FluidParticle* agent, xmachine_
 	// Gravity
 	agent->dy -= 9.8f * TIMESTEP;
 
+	// Cap velocity
+	if (agent->dx < -MAX_VELOCITY)
+		agent->dx = -MAX_VELOCITY;
+	if (agent->dx > MAX_VELOCITY)
+		agent->dx = MAX_VELOCITY;
+
+	if (agent->dy < -MAX_VELOCITY)
+		agent->dy = -MAX_VELOCITY;
+	if (agent->dy > MAX_VELOCITY)
+		agent->dy = MAX_VELOCITY;
+
+	if (agent->dz < -MAX_VELOCITY)
+		agent->dz = -MAX_VELOCITY;
+	if (agent->dz > MAX_VELOCITY)
+		agent->dz = MAX_VELOCITY;
+
 	// Boundary conditions
 	if (abs(agent->x + agent->dx*TIMESTEP) > HALF_BOUNDARY_WIDTH)
 		agent->dx = -agent->dx*RESTITUTION_COEFFICIENT;
 	if (abs(agent->y + agent->dy*TIMESTEP) > HALF_BOUNDARY_WIDTH)
 		agent->dy = -agent->dy*RESTITUTION_COEFFICIENT;
-	if (abs(agent->z + agent->dz*TIMESTEP) > HALF_BOUNDARY_WIDTH)
+	if (abs(agent->z + agent->dz*TIMESTEP) > HALF_BOUNDARY_WIDTH / 2.0f)
 		agent->dz = -agent->dz*RESTITUTION_COEFFICIENT;
 
 	// Integrate velocities

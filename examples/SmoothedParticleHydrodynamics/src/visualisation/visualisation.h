@@ -28,7 +28,7 @@ const float FAR_CLIP = 100;
 //Circle model fidelity
 const int SPHERE_SLICES = 20;
 const int SPHERE_STACKS = 20;
-const float SPHERE_RADIUS = 0.0055f;
+const float SPHERE_RADIUS = 0.0085f;
 
 //Viewing Distance
 const float VIEW_DISTANCE = 1.5;
