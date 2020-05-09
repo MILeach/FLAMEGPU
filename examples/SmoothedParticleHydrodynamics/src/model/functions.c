@@ -16,15 +16,15 @@
  *
  */
 
-/*
-	0.25m x 0.5m x 1.0m volume of a fluid in a 1m x 1m x 1m box
-	Total fluid volume: 0.125m^3
-	Fluid density: 1000kg/m^3
-	Total fluid weight: 125kg
-	Number of particles: 64,000
-	Particle weight: 125kg/64,000 = 0.015625kg
-	Initial particle spacing ~= 0.0125m
+/* 
+	Smoothed Particle Hydrodynamics
 
+	Suggested things to try:
+	
+	Play with the viscosity to try fluids of different thickness - the simulation is
+	stable for viscosity values between ~0.1 - 30
+
+	Lower the fluid rest density to TODO see the 'FLAME' explode instead of fall
 */
 
 
@@ -42,15 +42,14 @@
 #define MAX_VELOCITY 4.0f
 
 // Environemental parameters
-#define RESTITUTION_COEFFICIENT 0.6f
+#define RESTITUTION_COEFFICIENT 0.9f
 #define HALF_BOUNDARY_WIDTH 0.5f
 
 // Fluid properties
 #define PARTICLE_MASS 0.001953125f
-#define PRESSURE_COEFFICIENT 1.0f
+#define PRESSURE_COEFFICIENT 0.9f
 #define FLUID_REST_DENSITY 1000.0f
 #define MINIMUM_PARTICLE_DENSITY 0.0f
-#define MAXIMUM_PARTICLE_DENSITY 10000000.0f
 #define VISCOSITY 10.0f
 
 //// Math helpers
@@ -75,15 +74,23 @@ __device__ float computeDelSqW(float distance, float smoothingLength) {
 	return distance < smoothingLength ? (45.0f / (PI*pow(smoothingLength, 6))) * (smoothingLength - distance) : 0.0f;
 }
 
+__device__ float computeSurfaceTension(float distance, float smoothingLength) {
+	if (distance > smoothingLength / 2.0f && distance <= smoothingLength)
+		return 10 * (32.0f / (PI*pow(smoothingLength, 6))) * pow(smoothingLength - distance, 3) * pow(distance, 3);
+	if (distance > 0 && distance <= smoothingLength / 2.0f)
+		return (((64.0f / (PI*pow(smoothingLength, 6))) * 2 * pow(smoothingLength - distance, 3) * pow(distance, 3)) - pow(smoothingLength, 4) / 64.0f);
+	return 0.0f;
+}
+
 /**
  * outputLocationVelocity FLAMEGPU Agent Function
  * Automatically generated using functions.xslt
  * @param agent Pointer to an agent structure of type xmachine_memory_FluidParticle. This represents a single agent instance and can be modified directly.
- * @param location_velocity_messages Pointer to output message list of type xmachine_message_location_velocity_list. Must be passed as an argument to the add_location_velocity_message function.
+ * @param location_messages Pointer to output message list of type xmachine_message_location_list. Must be passed as an argument to the add_location_message function.
  */
-__FLAME_GPU_FUNC__ int outputLocationVelocity(xmachine_memory_FluidParticle* agent, xmachine_message_location_velocity_list* location_velocity_messages){
+__FLAME_GPU_FUNC__ int outputLocation(xmachine_memory_FluidParticle* agent, xmachine_message_location_list* location_messages){
     
-    add_location_velocity_message(location_velocity_messages, agent->id, agent->x, agent->y, agent->z, agent->dx, agent->dy, agent->dz);
+    add_location_message(location_messages, agent->id, agent->x, agent->y, agent->z);
 
     return 0;
 }
@@ -92,15 +99,14 @@ __FLAME_GPU_FUNC__ int outputLocationVelocity(xmachine_memory_FluidParticle* age
  * computeDensityPressure FLAMEGPU Agent Function
  * Automatically generated using functions.xslt
  * @param agent Pointer to an agent structure of type xmachine_memory_FluidParticle. This represents a single agent instance and can be modified directly.
- * @param location_velocity_messages  location_velocity_messages Pointer to input message list of type xmachine_message__list. Must be passed as an argument to the get_first_location_velocity_message and get_next_location_velocity_message functions.* @param density_pressure_messages Pointer to output message list of type xmachine_message_density_pressure_list. Must be passed as an argument to the add_density_pressure_message function.
+ * @param location_messages  location_messages Pointer to input message list of type xmachine_message__list. Must be passed as an argument to the get_first_location_message and get_next_location_message functions.* @param density_pressure_messages Pointer to output message list of type xmachine_message_density_pressure_list. Must be passed as an argument to the add_density_pressure_message function.
  */
-__FLAME_GPU_FUNC__ int computeDensityPressure(xmachine_memory_FluidParticle* agent, xmachine_message_location_velocity_list* location_velocity_messages, xmachine_message_location_velocity_PBM* partition_matrix, xmachine_message_density_pressure_list* density_pressure_messages){
+__FLAME_GPU_FUNC__ int computeDensityPressure(xmachine_memory_FluidParticle* agent, xmachine_message_location_list* location_messages, xmachine_message_location_PBM* partition_matrix, xmachine_message_density_pressure_list* density_pressure_messages){
 
 	// Compute unmodified particle density
 	float density = 0.0f;
-	int numNeighbours = 0;
     
-    xmachine_message_location_velocity* current_message = get_first_location_velocity_message(location_velocity_messages, partition_matrix, agent->x, agent->y, agent->z);
+    xmachine_message_location* current_message = get_first_location_message(location_messages, partition_matrix, agent->x, agent->y, agent->z);
 	while (current_message)
 	{
 		// For each agent add weighted density contribution
@@ -109,7 +115,7 @@ __FLAME_GPU_FUNC__ int computeDensityPressure(xmachine_memory_FluidParticle* age
 		float w = computeW(distance, SMOOTHING_LENGTH);
 		density += PARTICLE_MASS * w;
 		
-		current_message = get_next_location_velocity_message(current_message, location_velocity_messages, partition_matrix);
+		current_message = get_next_location_message(current_message, location_messages, partition_matrix);
 	}
 
 	// Set density and pressure for the particle - negative pressures are not used
@@ -130,7 +136,7 @@ __FLAME_GPU_FUNC__ int computeDensityPressure(xmachine_memory_FluidParticle* age
  */
 __FLAME_GPU_FUNC__ int computeForce(xmachine_memory_FluidParticle* agent, xmachine_message_density_pressure_list* density_pressure_messages, xmachine_message_density_pressure_PBM* partition_matrix){
     
-	glm::vec3 pressure = glm::vec3(0.0f);
+	glm::vec3 force = glm::vec3(0.0f);
 
     xmachine_message_density_pressure* current_message = get_first_density_pressure_message(density_pressure_messages, partition_matrix, agent->x, agent->y, agent->z);
     while (current_message)
@@ -143,7 +149,7 @@ __FLAME_GPU_FUNC__ int computeForce(xmachine_memory_FluidParticle* agent, xmachi
 			float distance = length(diff);			
 			float weight = (agent->pressure + current_message->pressure) / (2.0f * current_message->density);
 			glm::vec3 del_w = computeDelW(distance, diff, SMOOTHING_LENGTH);
-			pressure += PARTICLE_MASS * weight * del_w;
+			force += PARTICLE_MASS * weight * del_w;
 
 			// Only add viscosity contribution from non-static particles
 			if (current_message->isStatic == false)
@@ -153,26 +159,20 @@ __FLAME_GPU_FUNC__ int computeForce(xmachine_memory_FluidParticle* agent, xmachi
 				glm::vec3 Vij = (VISCOSITY * PARTICLE_MASS / (agent->density * current_message->density)) * velocityDiff;
 				float laplacian = computeDelSqW(distance, SMOOTHING_LENGTH);
 
-				pressure += laplacian * Vij;
+				force += laplacian * Vij;
 			}
 
 			// Add surface tension
-			float st = 0.0f;
-			if (distance > SMOOTHING_LENGTH / 2.0f && distance <= SMOOTHING_LENGTH)
-				st = 10 * (32.0f / (PI*pow(SMOOTHING_LENGTH, 6))) * pow(SMOOTHING_LENGTH - distance, 3) * pow(distance, 3);
-			if (distance > 0 && distance <= SMOOTHING_LENGTH / 2.0f)
-				st = (((64.0f / (PI*pow(SMOOTHING_LENGTH, 6))) * 2 * pow(SMOOTHING_LENGTH - distance, 3) * pow(distance, 3)) - pow(SMOOTHING_LENGTH, 4) / 64.0f);
-			pressure += st * diff;
+			force += computeSurfaceTension(distance, SMOOTHING_LENGTH) * diff;
 		}
         
         current_message = get_next_density_pressure_message(current_message, density_pressure_messages, partition_matrix);
     }
 
-	agent->fx = pressure.x;
-	agent->fy = pressure.y;
-	agent->fz = pressure.z;
+	agent->fx = force.x;
+	agent->fy = force.y;
+	agent->fz = force.z;
  
-    
     return 0;
 }
 

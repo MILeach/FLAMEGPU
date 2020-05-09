@@ -67,12 +67,12 @@
       </memory>
       <functions>
         <gpu:function>
-          <name>outputLocationVelocity</name>
+          <name>outputLocation</name>
           <currentState>default</currentState>
           <nextState>default</nextState>
           <outputs>
             <gpu:output>
-              <messageName>location_velocity</messageName>
+              <messageName>location</messageName>
               <gpu:type>single_message</gpu:type>
             </gpu:output>
           </outputs>
@@ -85,7 +85,7 @@
           <nextState>default</nextState>
           <inputs>
             <gpu:input>
-              <messageName>location_velocity</messageName>
+              <messageName>location</messageName>
             </gpu:input>
           </inputs>
           <outputs>
@@ -148,7 +148,7 @@
   </xagents>
   <messages>
     <gpu:message>
-      <name>location_velocity</name>
+      <name>location</name>
       <description>A message holding the location and velocity of an agent</description>
       <variables>
         <gpu:variable>
@@ -166,18 +166,6 @@
         <gpu:variable>
           <type>float</type>
           <name>z</name>
-        </gpu:variable>
-        <gpu:variable>
-          <type>float</type>
-          <name>dx</name>
-        </gpu:variable>
-        <gpu:variable>
-          <type>float</type>
-          <name>dy</name>
-        </gpu:variable>
-        <gpu:variable>
-          <type>float</type>
-          <name>dz</name>
         </gpu:variable>
       </variables>
       <gpu:partitioningSpatial>
@@ -251,7 +239,7 @@
   <layers>
     <layer>
       <gpu:layerFunction>
-        <name>outputLocationVelocity</name>
+        <name>outputLocation</name>
       </gpu:layerFunction>
     </layer>
     <layer>
