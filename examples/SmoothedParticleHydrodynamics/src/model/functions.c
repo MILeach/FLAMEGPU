@@ -17,7 +17,9 @@
  */
 
 /* 
-	Smoothed Particle Hydrodynamics
+	Smoothed Particle Hydrodynamics Demo
+	Author: Matthew Leach
+	Contact: M.Leach@sheffield.ac.uk
 
 	Suggested things to try:
 	
@@ -25,6 +27,8 @@
 	stable for viscosity values between ~0.1 - 30
 
 	Lower the fluid rest density to TODO see the 'FLAME' explode instead of fall
+
+	Use the python script in the iterations folder to change the initial arrangement of the fluid particles
 */
 
 
@@ -224,7 +228,6 @@ __FLAME_GPU_FUNC__ int integrate(xmachine_memory_FluidParticle* agent){
     return 0;
 }
 
-  
 
 
 #endif //_FLAMEGPU_FUNCTIONS
