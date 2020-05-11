@@ -22,7 +22,6 @@
     <ProjectGuid>{7CE78BF1-9E76-450A-B3C2-892470AD791B}</ProjectGuid>
     <RootNamespace>GameOfLife_</RootNamespace>
     <ProjectName>GameOfLife</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'" Label="Configuration">

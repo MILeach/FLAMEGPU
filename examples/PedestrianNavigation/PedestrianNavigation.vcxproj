@@ -22,7 +22,6 @@
     <ProjectGuid>{071BB28A-4F01-417B-B6A1-F38DF0F2E04E}</ProjectGuid>
     <RootNamespace>PedestrianNavigation_</RootNamespace>
     <ProjectName>PedestrianNavigation</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Console|x64'" Label="Configuration">
